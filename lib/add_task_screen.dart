@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:remind_me_app/database_helper.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -54,9 +55,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                final title = _taskTitleController.text;
-                print("Task title: $title");
+              onPressed: () async {
+                final title = _taskTitleController.text.trim();
+                if (title.isNotEmpty) {
+                  await DatabaseHelper().insertTask(title);
+                  Navigator.pop(context);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,

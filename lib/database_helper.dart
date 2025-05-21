@@ -40,4 +40,14 @@ class DatabaseHelper {
     final db = await database;
     await db.delete('tasks', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<void> updateTask(int id, String newTitle) async {
+    final db = await database;
+    await db.update(
+      'tasks',
+      {'title': newTitle},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }

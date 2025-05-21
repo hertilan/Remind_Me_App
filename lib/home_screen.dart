@@ -62,6 +62,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   return ListTile(
                     title: Text(task['title']),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => AddTaskScreen(
+                                taskId: task['id'],
+                                existingTitle: task['title'],
+                              ),
+                        ),
+                      ).then((_) => _loadTasks());
+                    },
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {

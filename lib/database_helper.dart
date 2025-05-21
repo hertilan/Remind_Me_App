@@ -13,6 +13,11 @@ class DatabaseHelper {
     return _database!;
   }
 
+  Future<List<Map<String, dynamic>>> getTasks() async {
+    final db = await database;
+    return await db.query('tasks');
+  }
+
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'tasks.db');
@@ -24,15 +29,34 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE tasks(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT
+      title TEXT NOT NULL,
+      dueDate TEXT,
+      isDone INTEGER NOT NULL DEFAULT 0
     )
   ''');
   }
 
-  Future<void> insertTask(String title) async {
+  Future<void> resetDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'tasks.db');
+    await deleteDatabase(path);
+  }
+
+  Future<void> toggleTask(int id, bool isDone) async {
+    final db = await database;
+    await db.update(
+      'tasks',
+      {'isDone': isDone ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> insertTask(String title, {DateTime? dueDate}) async {
     final db = await database;
     await db.insert('tasks', {
       'title': title,
+      'dueDate': dueDate?.toIso8601String(),
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
@@ -41,11 +65,11 @@ class DatabaseHelper {
     await db.delete('tasks', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<void> updateTask(int id, String newTitle) async {
+  Future<void> updateTask(int id, String newTitle, {DateTime? dueDate}) async {
     final db = await database;
     await db.update(
       'tasks',
-      {'title': newTitle},
+      {'title': newTitle, 'dueDate': dueDate?.toIso8601String()},
       where: 'id = ?',
       whereArgs: [id],
     );

@@ -48,7 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
             fontSize: 24,
           ),
         ),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.blueAccent[200],
+        centerTitle: true,
+        toolbarHeight: 70,
       ),
       body:
           _tasks.isEmpty
@@ -59,27 +61,91 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: _tasks.length,
                 itemBuilder: (context, index) {
                   final task = _tasks[index];
+                  final dueDate =
+                      task['dueDate'] != null
+                          ? DateTime.parse(
+                            task['dueDate'],
+                          ).toLocal().toString().substring(0, 16)
+                          : null;
 
-                  return ListTile(
-                    title: Text(task['title']),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => AddTaskScreen(
-                                taskId: task['id'],
-                                existingTitle: task['title'],
-                              ),
+                  final isDone = task['isDone'] == 1;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 8.0,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => AddTaskScreen(
+                                    taskId: task['id'],
+                                    existingTitle: task['title'],
+                                  ),
+                            ),
+                          ).then((_) => _loadTasks());
+                        },
+                        title: Text(
+                          task['title'],
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            decoration:
+                                isDone ? TextDecoration.lineThrough : null,
+                            decorationColor: Colors.red,
+                            decorationThickness: 3,
+                          ),
                         ),
-                      ).then((_) => _loadTasks());
-                    },
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        await DatabaseHelper().deleteTask(task['id']);
-                        _loadTasks();
-                      },
+                        subtitle:
+                            dueDate != null
+                                ? Text(
+                                  'Due: $dueDate',
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 16,
+                                    decoration:
+                                        isDone
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                    decorationColor: Colors.red,
+                                    decorationThickness: 3,
+                                  ),
+                                )
+                                : const Text('No due date'),
+                        leading: Checkbox(
+                          value: isDone,
+                          onChanged: (newValue) async {
+                            await DatabaseHelper().toggleTask(
+                              task['id'],
+                              newValue!,
+                            );
+                            _loadTasks();
+                          },
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () async {
+                            await DatabaseHelper().deleteTask(task['id']);
+                            _loadTasks();
+                          },
+                        ),
+                      ),
                     ),
                   );
                 },

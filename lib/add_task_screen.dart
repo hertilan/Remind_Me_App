@@ -13,7 +13,7 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final _controller = TextEditingController();
-
+  DateTime? _selectedDateTime;
   @override
   void initState() {
     super.initState();
@@ -27,13 +27,43 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (title.isEmpty) return;
 
     final db = DatabaseHelper();
+
     if (widget.taskId == null) {
-      await db.insertTask(title);
+      await db.insertTask(title, dueDate: _selectedDateTime);
     } else {
-      await db.updateTask(widget.taskId!, title);
+      await db.updateTask(widget.taskId!, title, dueDate: _selectedDateTime);
     }
 
     Navigator.pop(context);
+  }
+
+  Future<void> _pickDateTime() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate == null) return;
+
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (pickedTime == null) return;
+
+    final combined = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
+    );
+    setState(() {
+      _selectedDateTime = combined;
+    });
   }
 
   @override
@@ -73,6 +103,24 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ),
               ),
             ),
+            Text(
+              _selectedDateTime == null
+                  ? 'No date selected'
+                  : 'Selected: ${_selectedDateTime!.toString().substring(0, 16)}',
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.green,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _pickDateTime,
+              icon: const Icon(Icons.calendar_today),
+              label: const Text('Select Date & Time'),
+            ),
+            const SizedBox(height: 10),
+
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: ElevatedButton(

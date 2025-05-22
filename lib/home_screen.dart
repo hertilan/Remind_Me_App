@@ -21,7 +21,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadTasks() async {
     final db = await DatabaseHelper().database;
 
-    final tasks = await db.query('tasks', orderBy: 'id DESC');
+    final tasks = await db.query(
+      'tasks',
+      orderBy:
+          'CASE WHEN dueDate IS NULL THEN 1 ELSE 0 END, datetime(dueDate) ASC',
+    );
     setState(() {
       _tasks = tasks;
     });
@@ -141,8 +145,43 @@ class _HomeScreenState extends State<HomeScreen> {
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () async {
-                            await DatabaseHelper().deleteTask(task['id']);
-                            _loadTasks();
+                            final shouldDelete = await showDialog<bool>(
+                              context: context,
+                              builder:
+                                  (context) => AlertDialog(
+                                    title: const Text('Delete Task'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this task?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed:
+                                            () => Navigator.pop(context, false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed:
+                                            () => Navigator.pop(context, true),
+                                        child: const Text(
+                                          'Delete',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            );
+
+                            if (shouldDelete == true) {
+                              await DatabaseHelper().deleteTask(task['id']);
+                              _loadTasks();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Task deleted Successful'),
+                                  duration: Duration(seconds: 1),
+                                  backgroundColor: Colors.redAccent,
+                                ),
+                              );
+                            }
                           },
                         ),
                       ),

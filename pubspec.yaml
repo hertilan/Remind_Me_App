@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  sdk: '>=3.7.2 <4.0.0' # Keep your existing SDK range, ensuring compatibility
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -32,7 +32,20 @@ dependencies:
     sdk: flutter
   sqflite: ^2.3.2
   path: ^1.8.3
-  intl: ^0.19.0 
+  intl: ^0.19.0
+
+  # Firebase Core (Essential for all Firebase projects)
+  firebase_core: ^3.13.0 # As of May 2025
+
+  # Common Firebase Services (add/remove as needed for your project)
+  firebase_analytics: ^11.4.6 # As of May 2025
+  firebase_auth: ^5.5.4      # As of May 2025
+  cloud_firestore: ^5.6.8    # As of May 2025
+  firebase_storage: ^12.4.6  # As of May 2025
+  # firebase_messaging: ^15.2.5 # For push notifications
+  # cloud_functions: ^5.5.0 # For Cloud Functions callable functions
+  # firebase_crashlytics: ^4.3.5 # For crash reporting
+  # firebase_remote_config: ^5.4.3 # For remote configuration
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

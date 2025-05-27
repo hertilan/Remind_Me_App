@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "223768110894",
+    "project_id": "kw-reminder",
+    "storage_bucket": "kw-reminder.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223768110894:android:bbf3de90ee93a016af3cbf",
+        "android_client_info": {
+          "package_name": "com.example.remind_me_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKa_GG8DHXc1FO4BNw89B0Cwl2ujPTR-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

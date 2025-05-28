@@ -1,6 +1,7 @@
-plugins {
-    id("com.google.gms.google-services") version "4.3.15" apply false
-}
+// plugins {
+//     // id("org.jetbrains.kotlin.jvm") version "1.8.22" apply false
+//     id("com.google.gms.google-services") version "4.3.15" apply false
+// }
 
 allprojects {
     repositories {

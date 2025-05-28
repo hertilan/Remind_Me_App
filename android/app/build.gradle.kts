@@ -10,11 +10,11 @@ plugins {
 android {
     namespace = "com.example.remind_me_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
-
+    ndkVersion = "29.0.13113456"
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true // Enable desugaring for Java 8+ APIs
     }
 
     kotlinOptions {
@@ -26,10 +26,11 @@ android {
         applicationId = "com.example.remind_me_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
+        // minSdkVersion 23
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = 1
+        versionName = "1.0.0"
     }
 
     buildTypes {
@@ -61,5 +62,8 @@ dependencies {
     // If you added firebase_storage:
     // implementation("com.google.firebase:firebase-storage")
     // Add other Firebase SDKs here as needed for your Flutter packages
+    implementation("com.google.firebase:firebase-messaging:23.4.1") // Example: If you added firebase_messaging
+    implementation("androidx.core:core-ktx:1.12.0") // Required for core KTX support
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4") // Required for desugaring Java 8+ APIs
 }
 apply(plugin = "com.google.gms.google-services")

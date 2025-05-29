@@ -35,6 +35,7 @@ dependencies:
   intl: ^0.19.0
   firebase_messaging: ^15.2.6 # For push notifications
   flutter_local_notifications: ^19.2.1 # For local notifications
+  timezone: ^0.10.1 # Updated version for compatibility
    # Ensure this matches the latest version as of May 2025
 
   # Firebase Core (Essential for all Firebase projects)
@@ -57,6 +58,16 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.0 # For splash screen support
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logoremindme.png" # Path to your app icon
+
+ # Center the image on Android 
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -69,7 +80,17 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+flutter_native_splash:
+  color: "#ffffff" # Background color for the splash screen
+  image: "assets/logoremindme.png" # Path to your splash screen image
+  android: true
+  ios: true
+  android_gravity: "center"
+
 flutter:
+
+  assets:
+    - assets/logoremindme.png # Path to your app icon and splash screen image
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
+import 'services/notification_service.dart';
 
 class AddTaskScreen extends StatefulWidget {
   final int? taskId;
@@ -14,6 +15,8 @@ class AddTaskScreen extends StatefulWidget {
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final _controller = TextEditingController();
   DateTime? _selectedDateTime;
+  final _notificationService = NotificationService();
+
   @override
   void initState() {
     super.initState();
@@ -27,14 +30,42 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (title.isEmpty) return;
 
     final db = DatabaseHelper();
+    int taskId;
 
     if (widget.taskId == null) {
-      await db.insertTask(title, dueDate: _selectedDateTime);
+      taskId = await db.insertTask(title, dueDate: _selectedDateTime);
     } else {
-      await db.updateTask(widget.taskId!, title, dueDate: _selectedDateTime);
+      taskId = widget.taskId!;
+      await db.updateTask(taskId, title, dueDate: _selectedDateTime);
+      // Cancel existing notification before scheduling new one
+      await _notificationService.cancelTaskReminder(taskId);
     }
 
-    Navigator.pop(context);
+    // Schedule notification if date is selected
+    if (_selectedDateTime != null) {
+      await _notificationService.scheduleTaskReminder(
+        taskId,
+        title,
+        _selectedDateTime!,
+        context,
+      );
+    }
+
+    // Show success message
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.taskId == null ? 'Task added successfully' : 'Task updated successfully'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+
+    // Pop and refresh
+    if (mounted) {
+      Navigator.pop(context, true);  // Return true to indicate success
+    }
   }
 
   Future<void> _pickDateTime() async {

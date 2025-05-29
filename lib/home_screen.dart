@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'add_task_screen.dart';
+import 'services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _tasks = [];
+  final _notificationService = NotificationService();
 
   @override
   void initState() {
@@ -32,12 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToAddTask() async {
-    await Navigator.push(
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddTaskScreen()),
     );
 
-    _loadTasks();
+    if (result == true) {
+      await _loadTasks();
+    }
   }
 
   @override
@@ -55,6 +59,20 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.blueAccent[200],
         centerTitle: true,
         toolbarHeight: 70,
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.notifications_active, color: Colors.white),
+        //     onPressed: () async {
+        //       await _notificationService.showTestNotification();
+        //       ScaffoldMessenger.of(context).showSnackBar(
+        //         const SnackBar(
+        //           content: Text('Test notification sent!'),
+        //           backgroundColor: Colors.green,
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ],
       ),
       body:
           _tasks.isEmpty
@@ -84,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.grey[100],
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
+                            color: Colors.grey.withOpacity(0.2),
                             spreadRadius: 1,
                             blurRadius: 5,
                             offset: const Offset(0, 3),
@@ -93,8 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ListTile(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder:
@@ -103,7 +121,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     existingTitle: task['title'],
                                   ),
                             ),
-                          ).then((_) => _loadTasks());
+                          );
+
+                          if (result == true) {
+                            await _loadTasks();
+                          }
                         },
                         title: Text(
                           task['title'],

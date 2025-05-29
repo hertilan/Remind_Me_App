@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+// import 'package:sqflite/sqflite.dart';
+// import 'package:path/path.dart';
 import 'home_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'services/notification_service.dart';
 
 // Firebase
 import 'package:firebase_core/firebase_core.dart';
@@ -18,7 +19,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Init Firebase
@@ -31,6 +32,9 @@ Future<void> main() async {
     android: androidInitSettings,
   );
   await flutterLocalNotificationsPlugin.initialize(initSettings);
+
+  // Initialize NotificationService
+  await NotificationService().initialize();
 
   // Background handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -77,27 +81,6 @@ class _MyAppState extends State<MyApp> {
         print(
           '📩 Foreground message: ${message.notification?.title} - ${message.notification?.body}',
         );
-        RemoteNotification? notification = message.notification;
-        AndroidNotification? android = message.notification?.android;
-
-        if (notification != null && android != null) {
-          flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                'reminder_channel', // channel ID
-                'Reminders', // channel name
-                channelDescription:
-                    'This channel is for reminder notifications',
-                importance: Importance.high,
-                priority: Priority.high,
-                icon: '@mipmap/ic_launcher',
-              ),
-            ),
-          );
-        }
       });
 
       // 💭 App opened from background via notification

@@ -52,9 +52,9 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> insertTask(String title, {DateTime? dueDate}) async {
+  Future<int> insertTask(String title, {DateTime? dueDate}) async {
     final db = await database;
-    await db.insert('tasks', {
+    return await db.insert('tasks', {
       'title': title,
       'dueDate': dueDate?.toIso8601String(),
     }, conflictAlgorithm: ConflictAlgorithm.replace);
